@@ -32,8 +32,10 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
         self.PIN_I_SMAC4=10
         self.PIN_I_STELNO=11
         self.PIN_I_BDIAL=12
-        self.PIN_I_NSOAPJSON=13
-        self.PIN_I_NUPDATERATE=14
+        self.PIN_I_BABEA=13
+        self.PIN_I_BREBOOT=14
+        self.PIN_I_NSOAPJSON=15
+        self.PIN_I_NUPDATERATE=16
         self.PIN_O_SWIFI1SSID=1
         self.PIN_O_BRMWLAN1ONOFF=2
         self.PIN_O_SWIFI2SSID=3
@@ -42,11 +44,12 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
         self.PIN_O_BRMWLAN3ONOFF=6
         self.PIN_O_SWIFIGUESTSSID=7
         self.PIN_O_BRMWLANGUESTONOFF=8
-        self.PIN_O_SMAC1AVAIL=9
-        self.PIN_O_SMAC2AVAIL=10
-        self.PIN_O_SMAC3AVAIL=11
-        self.PIN_O_SMAC4AVAIL=12
-        self.PIN_O_SSOAPRPLY=13
+        self.PIN_O_BMAC1AVAIL=9
+        self.PIN_O_BMAC2AVAIL=10
+        self.PIN_O_BMAC3AVAIL=11
+        self.PIN_O_BMAC4AVAIL=12
+        self.PIN_O_BABEA=13
+        self.PIN_O_SSOAPRPLY=14
         self.FRAMEWORK._run_in_context_thread(self.on_init)
 
 ########################################################################################################
@@ -62,6 +65,7 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
     m_sUId = ""
     m_sPw = ""
     m_guestWifiIdx = 0
+    m_nTimeOut = 3
 
     def getServiceData(self, p_sStr, p_sServiceType):
         try:
@@ -174,7 +178,7 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
             request = urllib2.Request(url, data=data, headers=headers)
 
             # Open the URL and read the response.
-            response = urllib2.urlopen(request, context=ctx)
+            response = urllib2.urlopen(request, timeout=self.m_nTimeOut, context=ctx)
             response_data = response.read()
         except Exception as e:
             self.DEBUG.set_value("14102 Error", "getSecurityPort: " + str(e))
@@ -194,7 +198,7 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
             # Build a http request and overwrite host header with the original hostname.
             request = urllib2.Request(p_sUrl, headers={'Host':url_parsed.hostname})
             # Open the URL and read the response.
-            response = urllib2.urlopen(request, context=ctx)
+            response = urllib2.urlopen(request, timeout=self.m_nTimeOut, context=ctx)
             response_data = response.read()
         except Exception as e:
             self.DEBUG.set_value("14102 Error", "getData: " + str(e))
@@ -307,7 +311,7 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
             request = self.getSopaReq(url_parsed, p_grServiceData, p_sAction, p_AttrList)
 
             try:
-                response = urllib2.urlopen(request, context=ctx)
+                response = urllib2.urlopen(request, timeout=self.m_nTimeOut, context=ctx)
                 response_data = response.read()
                 print (response_data + "\n\n")
 
@@ -395,14 +399,23 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
                     nRet = int(data["NewActive"])
 
                 if (i == self.PIN_I_SMAC1):
-                    self._set_output_value(self.PIN_O_SMAC1AVAIL, nRet)
+                    self._set_output_value(self.PIN_O_BMAC1AVAIL, nRet)
                 elif (i == self.PIN_I_SMAC2):
-                    self._set_output_value(self.PIN_O_SMAC2AVAIL, nRet)
+                    self._set_output_value(self.PIN_O_BMAC2AVAIL, nRet)
                 elif (i == self.PIN_I_SMAC3):
-                    self._set_output_value(self.PIN_O_SMAC3AVAIL, nRet)
+                    self._set_output_value(self.PIN_O_BMAC3AVAIL, nRet)
                 elif (i == self.PIN_I_SMAC4):
-                    self._set_output_value(self.PIN_O_SMAC4AVAIL, nRet)
+                    self._set_output_value(self.PIN_O_BMAC4AVAIL, nRet)
             ### end mac discovery
+            
+            ###AB
+            serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:X_AVM-DE_TAM:1")
+            attrList = {"NewIndex " : 0}
+            data = self.setSoapAction(self.m_url_parsed, serviceData, "GetInfo ", attrList)
+            bOn = data["NewEnable"] == '1'
+            self._set_output_value(self.PIN_O_BABEA, bOn)
+            
+            ### end AB
 
             t = threading.Timer(nInterval, self.updateStatus).start()
 
@@ -498,25 +511,25 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
                 nRet = int(data["NewActive"])
 
             if (index == self.PIN_I_SMAC1):
-                self._set_output_value(self.PIN_O_SMAC1AVAIL, nRet)
+                self._set_output_value(self.PIN_O_BMAC1AVAIL, nRet)
             elif (index == self.PIN_I_SMAC2):
-                self._set_output_value(self.PIN_O_SMAC2AVAIL, nRet)
+                self._set_output_value(self.PIN_O_BMAC2AVAIL, nRet)
             elif (index == self.PIN_I_SMAC3):
-                self._set_output_value(self.PIN_O_SMAC3AVAIL, nRet)
+                self._set_output_value(self.PIN_O_BMAC3AVAIL, nRet)
             elif (index == self.PIN_I_SMAC4):
-                self._set_output_value(self.PIN_O_SMAC4AVAIL, nRet)
+                self._set_output_value(self.PIN_O_BMAC4AVAIL, nRet)
         ### end mac discovery
 
         elif (index == self.PIN_I_BDIAL):
             serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:X_VoIP:1")
 
-            if (value == 1): 
-                attrList = {"NewX_AVM-DE_PhoneNumber" : self._get_input_value(self.PIN_I_STELNO)}
-                data = self.setSoapAction(self.m_url_parsed, serviceData, "X_AVM-DE_DialNumber", attrList)
-            
-            elif (value == 0):
+            if (value == 0):
                 attrList = {}
                 data = self.setSoapAction(self.m_url_parsed, serviceData, "X_AVM-DE_DialHangup", attrList)
+
+            else: 
+                attrList = {"NewX_AVM-DE_PhoneNumber" : self._get_input_value(self.PIN_I_STELNO)}
+                data = self.setSoapAction(self.m_url_parsed, serviceData, "X_AVM-DE_DialNumber", attrList)
         ### end dial / call
         
         ### generic soap request
@@ -535,3 +548,23 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
                 data = self.setSoapAction(self.m_url_parsed, serviceData, action_name, argumentList)
 
                 self._set_output_value(self.PIN_O_SSOAPRPLY, str(data))
+
+        # Trigger Reboot
+        elif (index == self.PIN_I_BREBOOT):
+            serviceData = self.getServiceData(self.m_sServiceDscr, "urn:DeviceConfig-com:serviceId:DeviceConfig1")
+
+            if (value == 1): 
+                attrList = {}
+                data = self.setSoapAction(self.m_url_parsed, serviceData, "Reboot", attrList)
+
+        # AB ein/aus
+        elif (index == self.PIN_I_BABEA):
+            serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:X_AVM-DE_TAM:1")
+
+            if (value == 0): 
+                attrList = {"NewIndex":"0","NewEnable":"0"}
+                data = self.setSoapAction(self.m_url_parsed, serviceData, "SetEnable", attrList)
+            
+            else: 
+                attrList = {"NewIndex":"0","NewEnable":"1"}
+                data = self.setSoapAction(self.m_url_parsed, serviceData, "SetEnable", attrList)

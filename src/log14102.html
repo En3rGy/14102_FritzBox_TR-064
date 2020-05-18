@@ -33,7 +33,7 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
  </tr>
   <tr>
   <td>Gültigkeit der Hilfe:</td>
-  <td>Bausteinversion 0.5</td>
+  <td>Bausteinversion 0.6</td>
  </tr>
   <tr>
   <td>min. HS FW:</td>
@@ -101,7 +101,7 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
   <td></td>
  </tr>
  <tr> 
-  <td rowspan="2">4</td> 
+  <td rowspan="3">4</td> 
   <td>Rufnummer</td>
   <td>0</td>
   <td>Rufnummer, die gewählt werden soll.</td>
@@ -112,7 +112,18 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
   <td>Wählt die Nummer bei 1, beendet die Verbindung bei 0</td>
  </tr>
  <tr> 
+  <td>AB E/A</td>
+  <td>0</td>
+  <td>Anrufbeantworter 1 ein-/ausschalten (1/0)</td>
+ </tr> 
+ <tr> 
   <td>5</td>
+  <td>Reboot</td>
+  <td>0</td>
+  <td>Löst bei eingehender 1 einen Reboot der Fritz!Box aus.</td>
+ </tr>  
+ <tr> 
+  <td>6</td>
   <td>Gen. SOAP Aktion</td>
   <td></td>
   <td>Über diesen Eingang können beliebige SOAP Aktionen an die Fritz!Box übermittelt werden.<br>
@@ -121,7 +132,7 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
   </td>
  </tr>   
  <tr> 
-  <td>6</td>
+  <td>7</td>
   <td>Update-Rate (s)</td>
   <td>0</td>
   <td>Intervall, in dem die FritzBox nach Statusinformationen abgefragt wird in Sekunden; bei einem Wert =0 findet <b>keine</b> zyklische Abfrage statt </td>
@@ -190,6 +201,12 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
   <td>0</td>
  </tr>
 <tr>
+  <td>4</td>
+  <td>AB E/A</td>
+  <td>0</td>
+  <td>Ein/aus-Status Anrufbeantworter 1</td>
+</tr>
+<tr>
   <td>5</td>
   <td>Gen. Soap Antw.</td>
   <td></td>
@@ -212,32 +229,39 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
 
 <h3>Change Log</h3>
 <ul>
-  <li>v0.05
+  <li>v0.6
+    <ul>
+	  <li>Impr.: Ein-/Ausgang zum AB</li>
+	  <li>Impr.: Eingang zum Reboot der Fritz!Box</li>
+	  <li>Fix: Baustein bleibt bei fehlender Verbindung zur FritzBox hängen; Timeout nach 3s für Kommunikation eingefügt</li>	  
+	</ul>
+  </li>
+  <li>v0.5
     <ul>
 	  <li>Impr.: Baustein erkennt HS-IP selbständig</li>
 	</ul>
   </li>
-  <li>v0.04
+  <li>v0.4
     <ul>
 	  <li>Timer zur Intervall-Abfrage des Status</li>
 	  <li>Ein-/Ausgänge für generische SOAP Requests</li>
 	  <li>Fix: Bei unter 4 WLAN Signalen wird der Status des Gast-WLAN nicht auf dem Ausgang Gast-WLAN ausgegeben, sondern nur auf dem höchsten Index, z.B. WLAN 3</li>
 	</ul>
   </li>
-  <li>v0.03
+  <li>v0.3
     <ul>
 	  <li>Fix: RM WLAN 2 wird auf WLAN 3 ausgegeben</li>
 	  <li>Fix: Gast-WLAN E/A setzt WLAN 1</li>
 	</ul>
   </li>
-  <li>v0.02
+  <li>v0.2
     <ul>
 	  <li>Anwesenheitserkennung</li>
 	  <li>Wählhilfe</li>
 	  <li>Automatische Erkennung Gast-WLAN</li>
 	</ul>
   </li>
-  <li>v0.01
+  <li>v0.1
     <ul>
 	  <li>Initiales Release</li>
 	</ul>
@@ -246,8 +270,8 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
 
 <h3>Open Issues / Known Bugs</h3>
 <ul>
- <li>Automatisches Erkennen der IP des HS.</li>
- <li>Ergänzen weiterer Services / Aktionen.</li>
+ <li>Bei mehreren Fritz!Boxen im Netzwerk wird ggf. nicht die korrekte zur Kommunikation ausgewählt.<br>
+     Möglicher Workaround: Beim ersten Einsatz des Bausteins (z.B. nach HS-Neustart) alle nicht-Master Fritz!Boxen vom Netz trennen.</li>
 </ul>
 
 <h3>Code</h3>
