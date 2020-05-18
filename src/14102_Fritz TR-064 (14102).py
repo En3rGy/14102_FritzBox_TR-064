@@ -410,11 +410,11 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
             
             ###AB
             serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:X_AVM-DE_TAM:1")
-            attrList = {"NewIndex " : 0}
-            data = self.setSoapAction(self.m_url_parsed, serviceData, "GetInfo ", attrList)
-            bOn = data["NewEnable"] == '1'
-            self._set_output_value(self.PIN_O_BABEA, bOn)
-            
+            attrList = {"NewIndex" : "0"}
+            data = self.setSoapAction(self.m_url_parsed, serviceData, "GetInfo", attrList)
+            if (data):
+                nOn = int (data["NewEnable"] == '1')
+                self._set_output_value(self.PIN_O_BABEA, nOn)
             ### end AB
 
             t = threading.Timer(nInterval, self.updateStatus).start()
@@ -476,7 +476,6 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
             self.DEBUG.set_value("14102 SOAP Repl.", str(data))
 
             nOn = int(((data["NewStatus"] == "Up") and (data["NewEnable"] == '1')))
-
 
             if (nWifiIdx == self.m_guestWifiIdx):
                 self._set_output_value(self.PIN_O_BRMWLANGUESTONOFF, nOn)
@@ -551,9 +550,8 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
 
         # Trigger Reboot
         elif (index == self.PIN_I_BREBOOT):
-            serviceData = self.getServiceData(self.m_sServiceDscr, "urn:DeviceConfig-com:serviceId:DeviceConfig1")
-
             if (value == 1): 
+                serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:DeviceConfig:1")
                 attrList = {}
                 data = self.setSoapAction(self.m_url_parsed, serviceData, "Reboot", attrList)
 
@@ -568,3 +566,8 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
             else: 
                 attrList = {"NewIndex":"0","NewEnable":"1"}
                 data = self.setSoapAction(self.m_url_parsed, serviceData, "SetEnable", attrList)
+
+            attrList = {"NewIndex" : "0"}
+            data = self.setSoapAction(self.m_url_parsed, serviceData, "GetInfo", attrList)
+            bOn = data["NewEnable"] == '1'
+            self._set_output_value(self.PIN_O_BABEA, bOn)
