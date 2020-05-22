@@ -22,20 +22,21 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
         self.LOGGER = self._get_logger(hsl20_3.LOGGING_NONE,())
         self.PIN_I_SUID=1
         self.PIN_I_SPW=2
-        self.PIN_I_BWIFI1ON=3
-        self.PIN_I_BWIFI2ON=4
-        self.PIN_I_BWIFI3ON=5
-        self.PIN_I_BWIFIGUESTON=6
-        self.PIN_I_SMAC1=7
-        self.PIN_I_SMAC2=8
-        self.PIN_I_SMAC3=9
-        self.PIN_I_SMAC4=10
-        self.PIN_I_STELNO=11
-        self.PIN_I_BDIAL=12
-        self.PIN_I_BABEA=13
-        self.PIN_I_BREBOOT=14
-        self.PIN_I_NSOAPJSON=15
-        self.PIN_I_NUPDATERATE=16
+        self.PIN_I_SFBIP=3
+        self.PIN_I_BWIFI1ON=4
+        self.PIN_I_BWIFI2ON=5
+        self.PIN_I_BWIFI3ON=6
+        self.PIN_I_BWIFIGUESTON=7
+        self.PIN_I_SMAC1=8
+        self.PIN_I_SMAC2=9
+        self.PIN_I_SMAC3=10
+        self.PIN_I_SMAC4=11
+        self.PIN_I_STELNO=12
+        self.PIN_I_BDIAL=13
+        self.PIN_I_BABEA=14
+        self.PIN_I_BREBOOT=15
+        self.PIN_I_NSOAPJSON=16
+        self.PIN_I_NUPDATERATE=17
         self.PIN_O_SWIFI1SSID=1
         self.PIN_O_BRMWLAN1ONOFF=2
         self.PIN_O_SWIFI2SSID=3
@@ -56,7 +57,7 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
 #### Own written code can be placed after this commentblock . Do not change or delete commentblock! ####
 ###################################################################################################!!!##
 
-
+    m_sFBIP = ""
     m_url_parsed = ""
     m_sServiceDscr = ""
     m_sNonce = ""
@@ -101,6 +102,13 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
 
     # @return urlparse
     def discover(self):
+
+        if self.m_sFBIP:
+            url_unparsed = "http://" + self.m_sFBIP + ":49000/tr64desc.xml"
+            url_parsed = urlparse.urlparse(url_unparsed)
+
+            if url_parsed.netloc:
+                return url_parsed
 
         #SSDP request msg from application
         MCAST_MSG = ('M-SEARCH * HTTP/1.1\r\n' +
@@ -422,6 +430,9 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
 
     def on_init(self):
         self.DEBUG = self.FRAMEWORK.create_debug_section()
+        
+        self.m_sFBIP = self._get_input_value(self.PIN_I_SFBIP)
+        
         self.updateStatus()
 
 

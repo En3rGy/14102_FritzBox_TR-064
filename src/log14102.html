@@ -33,11 +33,11 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
  </tr>
   <tr>
   <td>Gültigkeit der Hilfe:</td>
-  <td>Bausteinversion 0.6</td>
+  <td>Bausteinversion 0.7</td>
  </tr>
   <tr>
-  <td>min. HS FW:</td>
-  <td>4.7.0</td>
+  <td>Getestet mit HS FW:</td>
+  <td>4.10</td>
  </tr> 
 </table>
 
@@ -52,7 +52,7 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
   <td><b>Beschreibung</b></td>
  </tr>
  <tr>
-   <td rowspan="2">1</td>
+   <td rowspan="3">1</td>
   <td>Benutzer</td>
   <td></td>
   <td>Benutzername eines Fritz!Box-Zugangs.</td>
@@ -61,6 +61,15 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
   <td>Passwort</td>
   <td></td>
   <td>Passwort des Fritz!Box-Zugangs.</td>
+ </tr>
+ <tr>
+  <td>FritzBox IP</td>
+  <td></td>
+  <td><p>IP der FritzBox, mit der die TR-064 Kommunikation stattfinden soll.</p>
+  <p>Der Parameter ist optional. Ist er nicht angegeben, wird die FritzBox 
+  automatisch gesucht. Bei mehreren FritzBoxen im gleichen Netzwerk kann 
+  hierbei die falsche zur Kommunikation gewählt werden.</p>
+  <p>Der Wert wird ausschließlich bei der Initialisierung ausgelesen!</p></td>
  </tr> 
  <tr>
   <td rowspan="4">2</td> 
@@ -229,6 +238,11 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
 
 <h3>Change Log</h3>
 <ul>
+  <li>v0.7
+    <ul>
+	  <li>Impr.: Optionale Eingabe der FritzBox IP</li>
+	</ul>
+  </li>
   <li>v0.6
     <ul>
 	  <li>Impr.: Ein-/Ausgang zum AB</li>
@@ -270,8 +284,7 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein üb
 
 <h3>Open Issues / Known Bugs</h3>
 <ul>
- <li>Bei mehreren Fritz!Boxen im Netzwerk wird ggf. nicht die korrekte zur Kommunikation ausgewählt.<br>
-     Möglicher Workaround: Beim ersten Einsatz des Bausteins (z.B. nach HS-Neustart) alle nicht-Master Fritz!Boxen vom Netz trennen.</li>
+ <li>-</li>
 </ul>
 
 <h3>Code</h3>
