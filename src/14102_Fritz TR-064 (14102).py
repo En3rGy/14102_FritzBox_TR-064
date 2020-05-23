@@ -372,7 +372,9 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
                 attrList = {} #{"NewEnable":"", "NewStatus":"", "NewSSID":""}
                 data = self.setSoapAction(self.m_url_parsed, serviceData, "GetInfo", attrList)
 
-                nOn = int(((data["NewStatus"] == "Up") and (data["NewEnable"] == '1')))
+                #nOn = int(((data["NewStatus"] == "Up") and (data["NewEnable"] == '1')))
+                nOn = int(data["NewEnable"] == '1')
+                self.DEBUG.set_value("14102 WIFI " + str(nWifiIdx), data["NewStatus"])
 
                 if nWifiIdx == 1:
                     self._set_output_value(self.PIN_O_BRMWLAN1ONOFF, nOn)
@@ -486,7 +488,7 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
             data = self.setSoapAction(self.m_url_parsed, serviceData, "GetInfo", attrList)
             self.DEBUG.set_value("14102 SOAP Repl.", str(data))
 
-            nOn = int(((data["NewStatus"] == "Up") and (data["NewEnable"] == '1')))
+            nOn = int(data["NewEnable"] == '1')
 
             if (nWifiIdx == self.m_guestWifiIdx):
                 self._set_output_value(self.PIN_O_BRMWLANGUESTONOFF, nOn)
