@@ -49,8 +49,9 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
         self.PIN_O_BMAC2AVAIL=10
         self.PIN_O_BMAC3AVAIL=11
         self.PIN_O_BMAC4AVAIL=12
-        self.PIN_O_BABEA=13
-        self.PIN_O_SSOAPRPLY=14
+        self.PIN_O_BGUESTAVAIL=13
+        self.PIN_O_BABEA=14
+        self.PIN_O_SSOAPRPLY=15
         self.FRAMEWORK._run_in_context_thread(self.on_init)
 
 ########################################################################################################
@@ -421,6 +422,17 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
                     self._set_output_value(self.PIN_O_BMAC4AVAIL, nRet)
             ### end mac discovery
             
+            ###MAC in Guest WIFI
+            serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:WLANConfiguration:1")
+            attrList = {}
+            data = self.setSoapAction(self.m_url_parsed, serviceData, "X_AVM-DE_GetWLANDeviceListPath", attrList)
+            path = data["NewX_AVM-DE_WLANDeviceListPath"]
+            path = self.m_url_parsed.geturl() + path
+            contents = self.getData(path)
+            nRet = "<AssociatedDeviceGuest>1</AssociatedDeviceGuest>" in contents
+            self._set_output_value(self.PIN_O_BGUESTAVAIL, nRet)
+            ###end MAC in Guest WIFI
+
             ###AB
             serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:X_AVM-DE_TAM:1")
             attrList = {"NewIndex" : "0"}
