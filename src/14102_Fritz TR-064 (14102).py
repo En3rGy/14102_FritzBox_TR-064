@@ -572,7 +572,8 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
                 argumentList = res ["argumentList"]
 
                 serviceData = self.getServiceData(self.m_sServiceDscr, serviceType)
-                data = self.setSoapAction(self.m_url_parsed, serviceData, action_name, argumentList)
+                data = str(self.setSoapAction(self.m_url_parsed, serviceData, action_name, argumentList))
+                data = data.replace("'", '"') # exchange ' by "
 
                 self._set_output_value(self.PIN_O_SSOAPRPLY, str(data))
 
