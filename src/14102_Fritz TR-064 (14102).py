@@ -423,23 +423,29 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
             ### end mac discovery
             
             ###MAC in Guest WIFI
-            serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:WLANConfiguration:1")
-            attrList = {}
-            data = self.setSoapAction(self.m_url_parsed, serviceData, "X_AVM-DE_GetWLANDeviceListPath", attrList)
-            path = data["NewX_AVM-DE_WLANDeviceListPath"]
-            path = self.m_url_parsed.geturl() + path
-            contents = self.getData(path)
-            nRet = "<AssociatedDeviceGuest>1</AssociatedDeviceGuest>" in contents
-            self._set_output_value(self.PIN_O_BGUESTAVAIL, nRet)
+            try:
+                serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:WLANConfiguration:1")
+                attrList = {}
+                data = self.setSoapAction(self.m_url_parsed, serviceData, "X_AVM-DE_GetWLANDeviceListPath", attrList)
+                path = data["NewX_AVM-DE_WLANDeviceListPath"]
+                path = self.m_url_parsed.geturl() + path
+                contents = self.getData(path)
+                nRet = "<AssociatedDeviceGuest>1</AssociatedDeviceGuest>" in contents
+                self._set_output_value(self.PIN_O_BGUESTAVAIL, nRet)
+            except Exception as e:
+                pass
             ###end MAC in Guest WIFI
 
             ###AB
-            serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:X_AVM-DE_TAM:1")
-            attrList = {"NewIndex" : "0"}
-            data = self.setSoapAction(self.m_url_parsed, serviceData, "GetInfo", attrList)
-            if (data):
-                nOn = int (data["NewEnable"] == '1')
-                self._set_output_value(self.PIN_O_BABEA, nOn)
+            try:
+                serviceData = self.getServiceData(self.m_sServiceDscr, "urn:dslforum-org:service:X_AVM-DE_TAM:1")
+                attrList = {"NewIndex" : "0"}
+                data = self.setSoapAction(self.m_url_parsed, serviceData, "GetInfo", attrList)
+                if (data):
+                    nOn = int (data["NewEnable"] == '1')
+                    self._set_output_value(self.PIN_O_BABEA, nOn)
+            except Exception as e:
+                pass
             ### end AB
 
             t = threading.Timer(nInterval, self.updateStatus).start()
