@@ -14,12 +14,12 @@ import json
 ########################################################################################################
 ##** Code created by generator - DO NOT CHANGE! **##
 
-class FritzTR_064_14102_14102(hsl20_3.BaseModule):
+class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
     def __init__(self, homeserver_context):
-        hsl20_3.BaseModule.__init__(self, homeserver_context, "hsl20_3_FritzBox")
+        hsl20_4.BaseModule.__init__(self, homeserver_context, "hsl20_3_FritzBox")
         self.FRAMEWORK = self._get_framework()
-        self.LOGGER = self._get_logger(hsl20_3.LOGGING_NONE,())
+        self.LOGGER = self._get_logger(hsl20_4.LOGGING_NONE,())
         self.PIN_I_SUID=1
         self.PIN_I_SPW=2
         self.PIN_I_SFBIP=3
@@ -52,7 +52,6 @@ class FritzTR_064_14102_14102(hsl20_3.BaseModule):
         self.PIN_O_BGUESTAVAIL=13
         self.PIN_O_BABEA=14
         self.PIN_O_SSOAPRPLY=15
-        self.FRAMEWORK._run_in_context_thread(self.on_init)
 
 ########################################################################################################
 #### Own written code can be placed after this commentblock . Do not change or delete commentblock! ####
