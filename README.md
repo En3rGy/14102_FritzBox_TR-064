@@ -79,6 +79,8 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein �
 
 ### Change Log
 
+- v1.03
+    - Impr.: Debug ausgaben & Stabilität durch try-catch bei regelm. Statusabfrage
 - v1.02
     - Fix: JSON Ausgabe der SOPA-Antwort mit " statt '
 - v1.01

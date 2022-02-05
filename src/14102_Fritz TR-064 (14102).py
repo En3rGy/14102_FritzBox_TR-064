@@ -344,6 +344,11 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
             #    print ("setWifiActive loop" + str(x) + ": " + str(e))
 
         dic = {}
+        error_code = re.findall('<errorCode>(.*?)</errorCode>', response_data, flags=re.S)
+        error_descr = re.findall('<errorDescription>(.*?)</errorDescription>', response_data, flags=re.S)
+        if len(error_code) > 0:
+            print(error_code)
+            print(error_descr)
         response_data = self.do_regex(
             '<u:' + action + 'Response.*?>(?:\\n|)(.*?)(?:\\n|)<\\/u:' + action + 'Response>', response_data)
         # if response data is available; e.g. if a set command has been send, no return value is provided
@@ -367,37 +372,40 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
         interval = self._get_input_value(self.PIN_I_NUPDATERATE)
         if interval > 0:
             if not self.init_com():
-                print("init_com failed in update_status")
+                self.log_msg("Init_com failed in update_status")
                 return
 
             # work with wifi
-            for nWifiIdx in range(1, (self.guest_wifi_idx + 1)):
-                service_data = self.get_service_data(self.service_descr,
-                                                    "urn:dslforum-org:service:WLANConfiguration:" + str(nWifiIdx))
+            try:
+                for nWifiIdx in range(1, (self.guest_wifi_idx + 1)):
+                    service_data = self.get_service_data(self.service_descr,
+                                                        "urn:dslforum-org:service:WLANConfiguration:" + str(nWifiIdx))
 
-                # get wifi status
-                attr_list = {}  # {"NewEnable":"", "NewStatus":"", "NewSSID":""}
-                data = self.set_soap_action(self.url_parsed, service_data, "GetInfo", attr_list)
+                    # get wifi status
+                    attr_list = {}  # {"NewEnable":"", "NewStatus":"", "NewSSID":""}
+                    data = self.set_soap_action(self.url_parsed, service_data, "GetInfo", attr_list)
 
-                # nOn = int(((data["NewStatus"] == "Up") and (data["NewEnable"] == '1')))
-                on = int(data["NewEnable"] == '1')
-                self.log_data("WIFI " + str(nWifiIdx), data["NewStatus"])
+                    # nOn = int(((data["NewStatus"] == "Up") and (data["NewEnable"] == '1')))
+                    on = int(data["NewEnable"] == '1')
+                    self.log_data("WIFI " + str(nWifiIdx), data["NewStatus"])
 
-                if nWifiIdx == 1:
-                    self._set_output_value(self.PIN_O_BRMWLAN1ONOFF, on)
-                    self._set_output_value(self.PIN_O_SWIFI1SSID, data["NewSSID"])
+                    if nWifiIdx == 1:
+                        self._set_output_value(self.PIN_O_BRMWLAN1ONOFF, on)
+                        self._set_output_value(self.PIN_O_SWIFI1SSID, data["NewSSID"])
 
-                elif nWifiIdx == 2:
-                    self._set_output_value(self.PIN_O_BRMWLAN2ONOFF, on)
-                    self._set_output_value(self.PIN_O_SWIFI2SSID, data["NewSSID"])
+                    elif nWifiIdx == 2:
+                        self._set_output_value(self.PIN_O_BRMWLAN2ONOFF, on)
+                        self._set_output_value(self.PIN_O_SWIFI2SSID, data["NewSSID"])
 
-                elif nWifiIdx == 3:
-                    self._set_output_value(self.PIN_O_BRMWLAN3ONOFF, on)
-                    self._set_output_value(self.PIN_O_SWIFI3SSID, data["NewSSID"])
+                    elif nWifiIdx == 3:
+                        self._set_output_value(self.PIN_O_BRMWLAN3ONOFF, on)
+                        self._set_output_value(self.PIN_O_SWIFI3SSID, data["NewSSID"])
 
-                if nWifiIdx == self.guest_wifi_idx:
-                    self._set_output_value(self.PIN_O_BRMWLANGUESTONOFF, on)
-                    self._set_output_value(self.PIN_O_SWIFIGUESTSSID, data["NewSSID"])
+                    if nWifiIdx == self.guest_wifi_idx:
+                        self._set_output_value(self.PIN_O_BRMWLANGUESTONOFF, on)
+                        self._set_output_value(self.PIN_O_SWIFIGUESTSSID, data["NewSSID"])
+            except Exception as e:
+                self.log_msg("Unknown Error in wifi part of update_status")
             # End Wifi
 
             # MAC attendance
@@ -550,7 +558,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
         # End Wifi
 
         elif (
-                index == self.PIN_I_SMAC1 or index == self.PIN_I_SMAC2 or index == self.PIN_I_SMAC3 or index == self.PIN_I_SMAC4):
+            index == self.PIN_I_SMAC1 or index == self.PIN_I_SMAC2 or index == self.PIN_I_SMAC3 or index == self.PIN_I_SMAC4):
             service_data = self.get_service_data(self.service_descr, "urn:dslforum-org:service:Hosts:1")
 
             attr_list = {"NewMACAddress": value}

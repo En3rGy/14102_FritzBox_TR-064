@@ -1,0 +1,4 @@
+.txt
+fritz_tr064.py
+.project
+.pydevproject
