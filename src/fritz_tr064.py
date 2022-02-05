@@ -420,18 +420,18 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
             except urllib2.HTTPError as e:
                 response_data = e.read()
-                self.log_msg("setSoapAction: " + response_data)
+                error_code = re.findall('<errorCode>(.*?)</errorCode>', response_data, flags=re.S)
+                error_descr = re.findall('<errorDescription>(.*?)</errorDescription>', response_data, flags=re.S)
+                self.log_msg("Error:         \t" + error_descr[0] + " (" + error_code[0] + ")"
+                             "\nservice_data:\t" + json.dumps(service_data) +
+                             "\naction:      \t" + action +
+                             "\nattr_list:   \t" + json.dumps(attr_list))
 
             # except Exception as e:
             #    self.DEBUG.add_message("setSoapAction: " + str(e))
             #    print ("setWifiActive loop" + str(x) + ": " + str(e))
 
         dic = {}
-        error_code = re.findall('<errorCode>(.*?)</errorCode>', response_data, flags=re.S)
-        error_descr = re.findall('<errorDescription>(.*?)</errorDescription>', response_data, flags=re.S)
-        if len(error_code) > 0:
-            print(error_code)
-            print(error_descr)
         response_data = self.do_regex(
             '<u:' + action + 'Response.*?>(?:\\n|)(.*?)(?:\\n|)<\\/u:' + action + 'Response>', response_data)
         # if response data is available; e.g. if a set command has been send, no return value is provided
