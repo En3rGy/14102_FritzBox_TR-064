@@ -1,7 +1,6 @@
 @echo off
 set path=%path%;C:\Python27\
 set PYTHONPATH=C:\Python27;C:\Python27\Lib
-@echo on
 
 echo ^<head^> > .\release\log14102.html
 echo ^<link rel="stylesheet" href="style.css"^> >> .\release\log14102.html

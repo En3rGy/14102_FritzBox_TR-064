@@ -25,8 +25,8 @@ class hsl20_4:
         pass
 
     class BaseModule:
-        debug_output_value = {}  # type: float
-        debug_set_remanent = {}  # type: float
+        debug_output_value = {}  # type: {}
+        debug_set_remanent = {}  # type: {}
         debug_input_value = {}
 
         def __init__(self, a, b):
@@ -46,7 +46,7 @@ class hsl20_4:
             self.debug_set_remanent = val
 
         def _set_output_value(self, pin, value):
-            self.debug_output_value[int(pin)] = value
+            self.debug_output_value[int(pin)] = value  # type: []
             print "# Out: " + str(value) + " @ pin " + str(pin)
 
         def _get_input_value(self, pin):
@@ -101,41 +101,40 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
     def __init__(self, homeserver_context):
         hsl20_4.BaseModule.__init__(self, homeserver_context, "hsl20_3_FritzBox")
         self.FRAMEWORK = self._get_framework()
-        self.LOGGER = self._get_logger(hsl20_4.LOGGING_NONE,())
-        self.PIN_I_SUID=1
-        self.PIN_I_SPW=2
-        self.PIN_I_SFBIP=3
-        self.PIN_I_BWIFI1ON=4
-        self.PIN_I_BWIFI2ON=5
-        self.PIN_I_BWIFI3ON=6
-        self.PIN_I_BWIFIGUESTON=7
-        self.PIN_I_SMAC1=8
-        self.PIN_I_SMAC2=9
-        self.PIN_I_SMAC3=10
-        self.PIN_I_SMAC4=11
-        self.PIN_I_STELNO=12
-        self.PIN_I_BDIAL=13
-        self.PIN_I_BABEA=14
-        self.PIN_I_BREBOOT=15
-        self.PIN_I_NSOAPJSON=16
-        self.PIN_I_NUPDATERATE=17
-        self.PIN_O_SWIFI1SSID=1
-        self.PIN_O_BRMWLAN1ONOFF=2
-        self.PIN_O_SWIFI2SSID=3
-        self.PIN_O_BRMWLAN2ONOFF=4
-        self.PIN_O_SWIFI3SSID=5
-        self.PIN_O_BRMWLAN3ONOFF=6
-        self.PIN_O_SWIFIGUESTSSID=7
-        self.PIN_O_BRMWLANGUESTONOFF=8
-        self.PIN_O_BMAC1AVAIL=9
-        self.PIN_O_BMAC2AVAIL=10
-        self.PIN_O_BMAC3AVAIL=11
-        self.PIN_O_BMAC4AVAIL=12
-        self.PIN_O_BGUESTAVAIL=13
-        self.PIN_O_BABEA=14
-        self.PIN_O_SSOAPRPLY=15
-        self.PIN_O_INSTANCE_ID=16
-        self.FRAMEWORK._run_in_context_thread(self.on_init)
+        self.LOGGER = self._get_logger(hsl20_4.LOGGING_NONE, ())
+        self.PIN_I_SUID = 1
+        self.PIN_I_SPW = 2
+        self.PIN_I_SFBIP = 3
+        self.PIN_I_BWIFI1ON = 4
+        self.PIN_I_BWIFI2ON = 5
+        self.PIN_I_BWIFI3ON = 6
+        self.PIN_I_BWIFIGUESTON = 7
+        self.PIN_I_SMAC1 = 8
+        self.PIN_I_SMAC2 = 9
+        self.PIN_I_SMAC3 = 10
+        self.PIN_I_SMAC_CSV = 11
+        self.PIN_I_STELNO = 12
+        self.PIN_I_BDIAL = 13
+        self.PIN_I_BABEA = 14
+        self.PIN_I_BREBOOT = 15
+        self.PIN_I_NSOAPJSON = 16
+        self.PIN_I_NUPDATERATE = 17
+        self.PIN_O_SWIFI1SSID = 1
+        self.PIN_O_BRMWLAN1ONOFF = 2
+        self.PIN_O_SWIFI2SSID = 3
+        self.PIN_O_BRMWLAN2ONOFF = 4
+        self.PIN_O_SWIFI3SSID = 5
+        self.PIN_O_BRMWLAN3ONOFF = 6
+        self.PIN_O_SWIFIGUESTSSID = 7
+        self.PIN_O_BRMWLANGUESTONOFF = 8
+        self.PIN_O_BMAC1AVAIL = 9
+        self.PIN_O_BMAC2AVAIL = 10
+        self.PIN_O_BMAC3AVAIL = 11
+        self.PIN_O_BMAC_CSV_AVAIL = 12
+        self.PIN_O_BGUESTAVAIL = 13
+        self.PIN_O_BABEA = 14
+        self.PIN_O_SSOAPRPLY = 15
+        self.PIN_O_INSTANCE_ID = 16
 
     ########################################################################################################
     #### Own written code can be placed after this commentblock . Do not change or delete commentblock! ####
@@ -185,10 +184,6 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 yield sockaddr[0]
 
     def discover_fb(self):
-        """
-
-        :rtype: urlparse
-        """
         fb_ip = self._get_input_value(self.PIN_I_SFBIP)
         if fb_ip:
             url_unparsed = "http://" + str(fb_ip) + ":49000/tr64desc.xml"
@@ -300,8 +295,8 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
         return self.service_descr
 
     def init_com(self):
-        uid = self._get_input_value(self.PIN_I_SUID)
-        pw = self._get_input_value(self.PIN_I_SPW)
+        # uid = self._get_input_value(self.PIN_I_SUID)
+        # pw = self._get_input_value(self.PIN_I_SPW)
 
         self.url_parsed = self.discover_fb()
         self.fb_ip = self.url_parsed.geturl()
@@ -337,29 +332,26 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
         return True
 
-    def getSoapHeader(self):
-        header = ""
-
+    def get_soap_header(self):
         if self.auth == "":
             header = ('<s:Header>\n\t<h:InitChallenge ' +
-                       'xmlns:h="http://soap-authentication.org/digest/2001/10/" ' +
-                       's:mustUnderstand="1">\n\t\t' +
-                       '<UserID>' + self.uId + '</UserID>\n\t</h:InitChallenge >\n' +
-                       '</s:Header>')
+                      'xmlns:h="http://soap-authentication.org/digest/2001/10/" ' +
+                      's:mustUnderstand="1">\n\t\t' +
+                      '<UserID>' + str(self.uId) + '</UserID>\n\t</h:InitChallenge >\n' +
+                      '</s:Header>')
 
         else:
             header = ('<s:Header>\n\t<h:ClientAuth ' +
-                       'xmlns:h="http://soap-authentication.org/digest/2001/10/" ' +
-                       's:mustUnderstand="1">' +
-                       '\n\t\t<Nonce>' + self.nonce + '</Nonce>' +
-                       '\n\t\t<Auth>' + self.auth + '</Auth>' +
-                       '\n\t\t<UserID>' + self.uId + '</UserID>' +
-                       '\n\t\t<Realm>' + self.realm + '</Realm>\n\t</h:ClientAuth>\n</s:Header>')
+                      'xmlns:h="http://soap-authentication.org/digest/2001/10/" ' +
+                      's:mustUnderstand="1">' +
+                      '\n\t\t<Nonce>' + self.nonce + '</Nonce>' +
+                      '\n\t\t<Auth>' + self.auth + '</Auth>' +
+                      '\n\t\t<UserID>' + str(self.uId) + '</UserID>' +
+                      '\n\t\t<Realm>' + self.realm + '</Realm>\n\t</h:ClientAuth>\n</s:Header>')
 
         return header
 
-    ##
-    ## @attr p_sFormerResp Response from a previous request
+    # @attr p_sFormerResp Response from a previous request
     def get_soap_req(self, url_parsed, service_data, action, attr_list):
 
         url = (url_parsed.geturl() + service_data["controlURL"])
@@ -370,7 +362,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                     'CONTENT-TYPE': 'text/xml; charset="utf-8"',
                     'SOAPACTION': '"' + service_data["serviceType"] + "#" + action + '"'}
 
-        soap_hdr = self.getSoapHeader()
+        soap_hdr = self.get_soap_header()
 
         data = ('<?xml version="1.0" encoding="utf-8"?>\n' +
                 '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" ' +
@@ -389,13 +381,13 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
         self.nonce = self.do_regex("<Nonce>(.*?)<\\/Nonce>", data)
         self.realm = self.do_regex("<Realm>(.*?)<\\/Realm>", data)
 
-        secret = hashlib.md5(self.uId + ":" + self.realm + ":" + self.pw)
+        secret = hashlib.md5(str(self.uId) + ":" + self.realm + ":" + self.pw)
         response = hashlib.md5(secret.hexdigest() + ":" + self.nonce)
 
         self.auth = response.hexdigest()
         # print ("\n" + self.auth + "\n")
 
-    def set_soap_action(self, url_parsed, service_data, action, attr_list, secure=False):
+    def set_soap_action(self, url_parsed, service_data, action, attr_list):
         # Build a SSL Context to disable certificate verification.
         ctx = ssl._create_unverified_context()
         response_data = ""
@@ -422,7 +414,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 response_data = e.read()
                 error_code = re.findall('<errorCode>(.*?)</errorCode>', response_data, flags=re.S)
                 error_descr = re.findall('<errorDescription>(.*?)</errorDescription>', response_data, flags=re.S)
-                self.log_msg("Error:         \t" + error_descr[0] + " (" + error_code[0] + ")"
+                self.log_msg("Error:         \t" + error_descr[0] + " (" + error_code[0] + ")" +
                              "\nservice_data:\t" + json.dumps(service_data) +
                              "\naction:      \t" + action +
                              "\nattr_list:   \t" + json.dumps(attr_list))
@@ -445,7 +437,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
     def get_guest_wifi_idx(self):
         wlan_if = re.findall("<serviceType>(urn:dslforum-org:service:WLANConfiguration:[0-9]<\\/serviceType>)",
-                            self.service_descr, re.S)
+                             self.service_descr, re.S)
         self.guest_wifi_idx = len(wlan_if)
         self.log_data("Guest WIFI Index", self.guest_wifi_idx)
 
@@ -462,7 +454,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
             try:
                 for nWifiIdx in range(1, (self.guest_wifi_idx + 1)):
                     service_data = self.get_service_data(self.service_descr,
-                                                        "urn:dslforum-org:service:WLANConfiguration:" + str(nWifiIdx))
+                                                         "urn:dslforum-org:service:WLANConfiguration:" + str(nWifiIdx))
 
                     # get wifi status
                     attr_list = {}  # {"NewEnable":"", "NewStatus":"", "NewSSID":""}
@@ -487,13 +479,13 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                     if nWifiIdx == self.guest_wifi_idx:
                         self._set_output_value(self.PIN_O_BRMWLANGUESTONOFF, on)
                         self._set_output_value(self.PIN_O_SWIFIGUESTSSID, data["NewSSID"])
-            except Exception as e:
+            except Exception:
                 self.log_msg("Unknown Error in wifi part of update_status")
-            # End Wifi
+            # End Wi-Fi
 
             # MAC attendance
             service_data = self.get_service_data(self.service_descr, "urn:dslforum-org:service:Hosts:1")
-            for i in range(self.PIN_I_SMAC1, (self.PIN_I_SMAC4 + 1)):
+            for i in range(self.PIN_I_SMAC1, (self.PIN_I_SMAC3 + 1)):
                 value = self._get_input_value(i)
 
                 if value == "":
@@ -512,8 +504,20 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                     self._set_output_value(self.PIN_O_BMAC2AVAIL, ret)
                 elif i == self.PIN_I_SMAC3:
                     self._set_output_value(self.PIN_O_BMAC3AVAIL, ret)
-                elif i == self.PIN_I_SMAC4:
-                    self._set_output_value(self.PIN_O_BMAC4AVAIL, ret)
+
+            # generic mac address list
+            mac_list = str(self._get_input_value(self.PIN_I_SMAC_CSV)).split(",")
+            result = str()
+            for mac_addr in mac_list:
+                attr_list = {"NewMACAddress": mac_addr}
+                data = self.set_soap_action(self.url_parsed, service_data, "GetSpecificHostEntry", attr_list)
+
+                if data:
+                    ret = int(data["NewActive"])
+                    result = result + str(ret) + ","
+
+            result = result[:-1]
+            self._set_output_value(self.PIN_O_BMAC_CSV_AVAIL, result)
             # end mac discovery
 
             # MAC in Guest WIFI
@@ -526,7 +530,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 contents = self.get_data(path)
                 ret = "<AssociatedDeviceGuest>1</AssociatedDeviceGuest>" in contents
                 self._set_output_value(self.PIN_O_BGUESTAVAIL, ret)
-            except Exception as e:
+            except Exception:
                 pass
             # end MAC in Guest WIFI
 
@@ -538,7 +542,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 if data:
                     on = int(data["NewEnable"] == '1')
                     self._set_output_value(self.PIN_O_BABEA, on)
-            except Exception as e:
+            except Exception:
                 pass
             # end AB
 
@@ -588,7 +592,8 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 self.update_status()
 
         # work with wifi
-        elif index == self.PIN_I_BWIFI1ON or index == self.PIN_I_BWIFI2ON or index == self.PIN_I_BWIFI3ON or index == self.PIN_I_BWIFIGUESTON:
+        elif index == self.PIN_I_BWIFI1ON or index == self.PIN_I_BWIFI2ON or index == self.PIN_I_BWIFI3ON or \
+                index == self.PIN_I_BWIFIGUESTON:
 
             wifi_on = int(value)
             if index == self.PIN_I_BWIFI1ON:
@@ -609,7 +614,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
             # switch on wifi
             attr_list = {"NewEnable": str(wifi_on)}
             self.log_msg("WIFI SOLL: idx " + str(wifi_idx) + ", status " + str(wifi_on))
-            data = self.set_soap_action(self.url_parsed, service_data, "SetEnable", attr_list)
+            self.set_soap_action(self.url_parsed, service_data, "SetEnable", attr_list)
 
             # get wifi status
             attr_list = {}
@@ -640,8 +645,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
         # End Wifi
 
-        elif (
-            index == self.PIN_I_SMAC1 or index == self.PIN_I_SMAC2 or index == self.PIN_I_SMAC3 or index == self.PIN_I_SMAC4):
+        elif index == self.PIN_I_SMAC1 or index == self.PIN_I_SMAC2 or index == self.PIN_I_SMAC3:
             service_data = self.get_service_data(self.service_descr, "urn:dslforum-org:service:Hosts:1")
 
             attr_list = {"NewMACAddress": value}
@@ -657,8 +661,24 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 self._set_output_value(self.PIN_O_BMAC2AVAIL, ret)
             elif index == self.PIN_I_SMAC3:
                 self._set_output_value(self.PIN_O_BMAC3AVAIL, ret)
-            elif index == self.PIN_I_SMAC4:
-                self._set_output_value(self.PIN_O_BMAC4AVAIL, ret)
+
+        elif index == self.PIN_I_SMAC_CSV:
+
+            service_data = self.get_service_data(self.service_descr, "urn:dslforum-org:service:Hosts:1")
+
+            mac_list = str(value).split(",")
+            result = str()
+            for mac_addr in mac_list:
+                attr_list = {"NewMACAddress": mac_addr}
+                data = self.set_soap_action(self.url_parsed, service_data, "GetSpecificHostEntry", attr_list)
+
+                if data:
+                    ret = int(data["NewActive"])
+                    result = result + str(ret) + ","
+
+            result = result[:-1]
+            self._set_output_value(self.PIN_O_BMAC_CSV_AVAIL, result)
+
         # end mac discovery
 
         elif index == self.PIN_I_BDIAL:
@@ -666,16 +686,17 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
             if value == 0:
                 attr_list = {}
-                data = self.set_soap_action(self.url_parsed, service_data, "X_AVM-DE_DialHangup", attr_list)
+                self.set_soap_action(self.url_parsed, service_data, "X_AVM-DE_DialHangup", attr_list)
 
             else:
                 attr_list = {"NewX_AVM-DE_PhoneNumber": self._get_input_value(self.PIN_I_STELNO)}
-                data = self.set_soap_action(self.url_parsed, service_data, "X_AVM-DE_DialNumber", attr_list)
+                self.set_soap_action(self.url_parsed, service_data, "X_AVM-DE_DialNumber", attr_list)
         # end dial / call
 
         # generic soap request
         elif index == self.PIN_I_NSOAPJSON:
-            # e.g.: '{"serviceType":"urn:dslforum-org:service:WLANConfiguration:1", "action_name":"SetEnable","argumentList":{"NewEnable":"1"}}'
+            # e.g.: '{"serviceType":"urn:dslforum-org:service:WLANConfiguration:1",
+            # "action_name":"SetEnable","argumentList":{"NewEnable":"1"}}'
             value = str(value)
 
             if value:
@@ -696,7 +717,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
             if value == 1:
                 service_data = self.get_service_data(self.service_descr, "urn:dslforum-org:service:DeviceConfig:1")
                 attr_list = {}
-                data = self.set_soap_action(self.url_parsed, service_data, "Reboot", attr_list)
+                self.set_soap_action(self.url_parsed, service_data, "Reboot", attr_list)
 
         # AB ein/aus
         elif index == self.PIN_I_BABEA:
@@ -704,16 +725,17 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
             if value == 0:
                 attr_list = {"NewIndex": "0", "NewEnable": "0"}
-                data = self.set_soap_action(self.url_parsed, service_data, "SetEnable", attr_list)
+                self.set_soap_action(self.url_parsed, service_data, "SetEnable", attr_list)
 
             else:
                 attr_list = {"NewIndex": "0", "NewEnable": "1"}
-                data = self.set_soap_action(self.url_parsed, service_data, "SetEnable", attr_list)
+                self.set_soap_action(self.url_parsed, service_data, "SetEnable", attr_list)
 
             attr_list = {"NewIndex": "0"}
             data = self.set_soap_action(self.url_parsed, service_data, "GetInfo", attr_list)
-            bOn = data["NewEnable"] == '1'
-            self._set_output_value(self.PIN_O_BABEA, bOn)
+            is_on = data["NewEnable"] == '1'  # type: bool
+            self._set_output_value(self.PIN_O_BABEA, is_on)
+
 
 ################################################################################
 
@@ -749,7 +771,8 @@ class TestSequenceFunctions(unittest.TestCase):
     def test_soap_req(self):
         print("\n### test_soap_req")
         ain = self.cred["AIN"]
-        req = '{"serviceType":"urn:dslforum-org:service:X_AVM-DE_Homeauto:1", "action_name":"GetSpecificDeviceInfos","argumentList":{"NewAIN":"' + ain + '"}}'
+        req = '{"serviceType":"urn:dslforum-org:service:X_AVM-DE_Homeauto:1", ' \
+              '"action_name":"GetSpecificDeviceInfos","argumentList":{"NewAIN":"' + ain + '"}}'
 
         self.test.on_input_value(self.test.PIN_I_NSOAPJSON, req)
 
@@ -763,11 +786,12 @@ class TestSequenceFunctions(unittest.TestCase):
         print("\n### test_mac_error")
         real_mac = self.cred["REAL_MAC"]
         self.test.on_input_value(self.test.PIN_I_SMAC2, real_mac)
-        ret = self.test.debug_output_value[self.test.PIN_O_BMAC2AVAIL]
+        ret = self.test.debug_output_value[self.test.PIN_O_BMAC2AVAIL]  # type: bool
         self.assertTrue(ret)
         self.test.on_input_value(self.test.PIN_I_SMAC3, "MAC_ERROR")
         ret = self.test.debug_output_value[self.test.PIN_O_BMAC3AVAIL]
         self.assertFalse(ret)
+
 
 if __name__ == '__main__':
     unittest.main()

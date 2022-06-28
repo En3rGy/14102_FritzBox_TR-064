@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <modules>
-        <module category="Datenaustausch" context="hsl20_3_FritzBox" id="14102" name="Fritz TR-064 (14102)" version="1.04">
+        <module category="Datenaustausch" context="hsl20_3_FritzBox" id="14102" name="Fritz TR-064 (14102)" version="1.05">
             <inputs>
 				<input type="string" const_name="sUId" init_value="">1: Benutzer</input>
                 <input type="string" const_name="sPW" init_value="">1: Passwort</input>	
@@ -13,7 +13,7 @@
 				<input type="string" const_name="sMac1" init_value="">3: MAC-Addr 1</input>
 				<input type="string" const_name="sMac2" init_value="">3: MAC-Addr 2</input>
 				<input type="string" const_name="sMac3" init_value="">3: MAC-Addr 3</input>
-				<input type="string" const_name="sMac4" init_value="">3: MAC-Addr 4</input>				
+				<input type="string" const_name="sMac_csv" init_value="">3: MAC-Addr CSV</input>
 				<input type="string" const_name="sTelNo" init_value="">4: Rufnummer</input>
 				<input type="number" const_name="bDial" init_value="0">4: Dial/Hang-Up (1/0)</input>
 				<input type="number" const_name="bAbEA" init_value="0">4: AB1 E/A</input>
@@ -33,7 +33,7 @@
 				<output type="number" const_name="bMac1Avail" init_value="0">3: MAC-Addr 1 angem.</output>
 				<output type="number" const_name="bMac2Avail" init_value="0">3: MAC-Addr 2 angem.</output>
 				<output type="number" const_name="bMac3Avail" init_value="0">3: MAC-Addr 3 angem.</output>
-				<output type="number" const_name="bMac4Avail" init_value="0">3: MAC-Addr 4 angem.</output>
+				<output type="string" const_name="bMac_csv_avail" init_value="">3: MAC-Addr CSV angem.</output>
 				<output type="number" const_name="bGuestAvail" init_value="0">3: Gast angem.</output>				
 				<output type="number" const_name="bAbEA" init_value="0">4: AB1 E/A</output>				
 				<output type="string" const_name="sSoapRply" init_value="0">5: Gen. Soap Antw.</output>
