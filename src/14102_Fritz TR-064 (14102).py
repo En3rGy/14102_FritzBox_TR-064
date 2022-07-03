@@ -59,6 +59,21 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 ###################################################################################################!!!##
 
 
+    sbc_data_lock = threading.Lock()
+
+    def set_output_value_sbc(self, pin, val):
+        # type:  (int, any) -> None
+        self.sbc_data_lock.acquire()
+        if pin in self.g_out_sbc:
+            if self.g_out_sbc[pin] == val:
+                print (str(time.time()) + " # SBC: pin " + str(pin) + " <- data not send / " + str(val).decode("utf-8"))
+                self.sbc_data_lock.release()
+                return
+
+        self._set_output_value(pin, val)
+        self.g_out_sbc[pin] = val
+        self.sbc_data_lock.release()
+
     def log_msg(self, text):
         self.DEBUG.add_message("14102 (" + str(self.fb_ip) + "): " + str(text))
 
@@ -317,7 +332,6 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
             try:
                 response = urllib2.urlopen(request, timeout=self.time_out, context=ctx)
                 response_data = response.read()
-                # print (response_data + "\n\n")
 
                 self.get_auth_data(response_data)
 
@@ -327,7 +341,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                     break
                 else:
                     if x == 1:
-                        print("Authentication failed in set_soap_action")
+                        self.DEBUG.add_message("In set_soap_action, authentication failed")
 
             except urllib2.HTTPError as e:
                 response_data = e.read()
@@ -384,20 +398,20 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                     self.log_data("WIFI " + str(nWifiIdx), data["NewStatus"])
 
                     if nWifiIdx == 1:
-                        self._set_output_value(self.PIN_O_BRMWLAN1ONOFF, on)
-                        self._set_output_value(self.PIN_O_SWIFI1SSID, data["NewSSID"])
+                        self.set_output_value_sbc(self.PIN_O_BRMWLAN1ONOFF, on)
+                        self.set_output_value_sbc(self.PIN_O_SWIFI1SSID, data["NewSSID"])
 
                     elif nWifiIdx == 2:
-                        self._set_output_value(self.PIN_O_BRMWLAN2ONOFF, on)
-                        self._set_output_value(self.PIN_O_SWIFI2SSID, data["NewSSID"])
+                        self.set_output_value_sbc(self.PIN_O_BRMWLAN2ONOFF, on)
+                        self.set_output_value_sbc(self.PIN_O_SWIFI2SSID, data["NewSSID"])
 
                     elif nWifiIdx == 3:
-                        self._set_output_value(self.PIN_O_BRMWLAN3ONOFF, on)
-                        self._set_output_value(self.PIN_O_SWIFI3SSID, data["NewSSID"])
+                        self.set_output_value_sbc(self.PIN_O_BRMWLAN3ONOFF, on)
+                        self.set_output_value_sbc(self.PIN_O_SWIFI3SSID, data["NewSSID"])
 
                     if nWifiIdx == self.guest_wifi_idx:
-                        self._set_output_value(self.PIN_O_BRMWLANGUESTONOFF, on)
-                        self._set_output_value(self.PIN_O_SWIFIGUESTSSID, data["NewSSID"])
+                        self.set_output_value_sbc(self.PIN_O_BRMWLANGUESTONOFF, on)
+                        self.set_output_value_sbc(self.PIN_O_SWIFIGUESTSSID, data["NewSSID"])
             except Exception:
                 self.log_msg("Unknown Error in wifi part of update_status")
             # End Wi-Fi
@@ -405,38 +419,44 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
             # MAC attendance
             service_data = self.get_service_data(self.service_descr, "urn:dslforum-org:service:Hosts:1")
             for i in range(self.PIN_I_SMAC1, (self.PIN_I_SMAC3 + 1)):
-                value = self._get_input_value(i)
+                try:
+                    value = self._get_input_value(i)
 
-                if value == "":
-                    continue
+                    if value == "":
+                        continue
 
-                attr_list = {"NewMACAddress": value}
-                data = self.set_soap_action(self.url_parsed, service_data, "GetSpecificHostEntry", attr_list)
+                    attr_list = {"NewMACAddress": value}
+                    data = self.set_soap_action(self.url_parsed, service_data, "GetSpecificHostEntry", attr_list)
 
-                ret = 0
-                if data:
-                    ret = int(data["NewActive"])
+                    ret = 0
+                    if data:
+                        ret = int(data["NewActive"])
 
-                if i == self.PIN_I_SMAC1:
-                    self._set_output_value(self.PIN_O_BMAC1AVAIL, ret)
-                elif i == self.PIN_I_SMAC2:
-                    self._set_output_value(self.PIN_O_BMAC2AVAIL, ret)
-                elif i == self.PIN_I_SMAC3:
-                    self._set_output_value(self.PIN_O_BMAC3AVAIL, ret)
+                    if i == self.PIN_I_SMAC1:
+                        self.set_output_value_sbc(self.PIN_O_BMAC1AVAIL, ret)
+                    elif i == self.PIN_I_SMAC2:
+                        self.set_output_value_sbc(self.PIN_O_BMAC2AVAIL, ret)
+                    elif i == self.PIN_I_SMAC3:
+                        self.set_output_value_sbc(self.PIN_O_BMAC3AVAIL, ret)
+                except Exception as e:
+                    self.log_msg("In update_status (MAC attendance), " + str(e))
 
             # generic mac address list
             mac_list = str(self._get_input_value(self.PIN_I_SMAC_CSV)).split(",")
             result = str()
             for mac_addr in mac_list:
-                attr_list = {"NewMACAddress": mac_addr}
-                data = self.set_soap_action(self.url_parsed, service_data, "GetSpecificHostEntry", attr_list)
+                try:
+                    attr_list = {"NewMACAddress": mac_addr}
+                    data = self.set_soap_action(self.url_parsed, service_data, "GetSpecificHostEntry", attr_list)
 
-                if data:
-                    ret = int(data["NewActive"])
-                    result = result + str(ret) + ","
+                    if data:
+                        ret = int(data["NewActive"])
+                        result = result + str(ret) + ","
+                except Exception as e:
+                    self.log_msg("In update_status (Generic MAC address list), " + str(e))
 
             result = result[:-1]
-            self._set_output_value(self.PIN_O_BMAC_CSV_AVAIL, result)
+            self.set_output_value_sbc(self.PIN_O_BMAC_CSV_AVAIL, result)
             # end mac discovery
 
             # MAC in Guest WIFI
@@ -448,7 +468,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 path = self.url_parsed.geturl() + path
                 contents = self.get_data(path)
                 ret = "<AssociatedDeviceGuest>1</AssociatedDeviceGuest>" in contents
-                self._set_output_value(self.PIN_O_BGUESTAVAIL, ret)
+                self.set_output_value_sbc(self.PIN_O_BGUESTAVAIL, ret)
             except Exception:
                 pass
             # end MAC in Guest WIFI
@@ -460,7 +480,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 data = self.set_soap_action(self.url_parsed, service_data, "GetInfo", attr_list)
                 if data:
                     on = int(data["NewEnable"] == '1')
-                    self._set_output_value(self.PIN_O_BABEA, on)
+                    self.set_output_value_sbc(self.PIN_O_BABEA, on)
             except Exception:
                 pass
             # end AB
@@ -471,18 +491,19 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
     def on_init(self):
         self.DEBUG = self.FRAMEWORK.create_debug_section()
+        self.g_out_sbc = {}  # type: {int, object}
         self.fb_ip = self._get_input_value(self.PIN_I_SFBIP)
         self.url_parsed = ""  # type: urlparse
         self.service_descr = ""  # type: str
         self.nonce = ""  # type: str
         self.realm = ""  # type: str
         self.auth = ""  # type: str
-        self.uId = self._get_input_value(self.PIN_I_SUID)
-        self.pw = self._get_input_value(self.PIN_I_SPW)
+        self.uId = self._get_input_value(self.PIN_I_SUID) # type: str
+        self.pw = self._get_input_value(self.PIN_I_SPW) # type: str
         self.guest_wifi_idx = 0  # type: int
         self.time_out = 3  # type: int
-        module_id = self._get_module_id()
-        self._set_output_value(self.PIN_O_INSTANCE_ID, module_id)
+        module_id = self._get_module_id() # type: str
+        self.set_output_value_sbc(self.PIN_O_INSTANCE_ID, module_id)
 
         self.update_status()
 
@@ -499,7 +520,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
         # self.DEBUG.set_value("Switch cmd", sUrl)
 
         if index == self.PIN_I_SUID or index == self.PIN_I_SPW:
-            print("Np UID or PW in on_input_value")
+            print("In on_input_value, no UID or PW")
             return
 
         if not self.init_com():
@@ -543,23 +564,23 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
             status = int(data["NewEnable"] == '1')
 
             if wifi_idx == self.guest_wifi_idx:
-                self._set_output_value(self.PIN_O_BRMWLANGUESTONOFF, status)
-                self._set_output_value(self.PIN_O_SWIFIGUESTSSID, data["NewSSID"])
+                self.set_output_value_sbc(self.PIN_O_BRMWLANGUESTONOFF, status)
+                self.set_output_value_sbc(self.PIN_O_SWIFIGUESTSSID, data["NewSSID"])
                 self.log_msg("RM Guest Wifi")
 
             if wifi_idx == 1:
-                self._set_output_value(self.PIN_O_BRMWLAN1ONOFF, status)
-                self._set_output_value(self.PIN_O_SWIFI1SSID, data["NewSSID"])
+                self.set_output_value_sbc(self.PIN_O_BRMWLAN1ONOFF, status)
+                self.set_output_value_sbc(self.PIN_O_SWIFI1SSID, data["NewSSID"])
                 self.log_msg("RM Wifi 1")
 
             elif wifi_idx == 2:
-                self._set_output_value(self.PIN_O_BRMWLAN2ONOFF, status)
-                self._set_output_value(self.PIN_O_SWIFI2SSID, data["NewSSID"])
+                self.set_output_value_sbc(self.PIN_O_BRMWLAN2ONOFF, status)
+                self.set_output_value_sbc(self.PIN_O_SWIFI2SSID, data["NewSSID"])
                 self.log_msg("RM Wifi 2")
 
             elif wifi_idx == 3:
-                self._set_output_value(self.PIN_O_BRMWLAN3ONOFF, status)
-                self._set_output_value(self.PIN_O_SWIFI3SSID, data["NewSSID"])
+                self.set_output_value_sbc(self.PIN_O_BRMWLAN3ONOFF, status)
+                self.set_output_value_sbc(self.PIN_O_SWIFI3SSID, data["NewSSID"])
                 self.log_msg("RM Wifi 3")
 
         # End Wifi
@@ -575,11 +596,11 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 ret = int(data["NewActive"])
 
             if index == self.PIN_I_SMAC1:
-                self._set_output_value(self.PIN_O_BMAC1AVAIL, ret)
+                self.set_output_value_sbc(self.PIN_O_BMAC1AVAIL, ret)
             elif index == self.PIN_I_SMAC2:
-                self._set_output_value(self.PIN_O_BMAC2AVAIL, ret)
+                self.set_output_value_sbc(self.PIN_O_BMAC2AVAIL, ret)
             elif index == self.PIN_I_SMAC3:
-                self._set_output_value(self.PIN_O_BMAC3AVAIL, ret)
+                self.set_output_value_sbc(self.PIN_O_BMAC3AVAIL, ret)
 
         elif index == self.PIN_I_SMAC_CSV:
 
@@ -596,7 +617,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                     result = result + str(ret) + ","
 
             result = result[:-1]
-            self._set_output_value(self.PIN_O_BMAC_CSV_AVAIL, result)
+            self.set_output_value_sbc(self.PIN_O_BMAC_CSV_AVAIL, result)
 
         # end mac discovery
 
@@ -629,7 +650,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 data = str(self.set_soap_action(self.url_parsed, service_data, action_name, argument_list))
                 data = data.replace("'", '"')  # exchange ' by "
 
-                self._set_output_value(self.PIN_O_SSOAPRPLY, str(data))
+                self.set_output_value_sbc(self.PIN_O_SSOAPRPLY, str(data))
 
         # Trigger Reboot
         elif index == self.PIN_I_BREBOOT:
@@ -653,4 +674,4 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
             attr_list = {"NewIndex": "0"}
             data = self.set_soap_action(self.url_parsed, service_data, "GetInfo", attr_list)
             is_on = data["NewEnable"] == '1'  # type: bool
-            self._set_output_value(self.PIN_O_BABEA, is_on)
+            self.set_output_value_sbc(self.PIN_O_BABEA, is_on)

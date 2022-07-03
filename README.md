@@ -2,7 +2,7 @@
 
 ## Beschreibung 
 
-Baustein zur Steuerung der FritzBox via TR-064, z.B. zur Konfiguration des WLAN.
+Baustein zur Steuerung der FritzBox via TR-064, z.B. zur Konfiguration des WLAN. *Alle Ausgänge sind als Send-by-Change (sbc) ausgeführt.*
 
 Die TR-064 Schnittstelle muss über dir Fritz!Box Web-Oberfläche ggf. erst aktiviert werden:
 
@@ -79,8 +79,12 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein �
 
 ### Change Log
 
-- v1.04
+- v1.06
+  - Impr.: Ausgänge als SBC
+  - Impr.: Try/catch für MAC-Abfrage 
+- v1.05
   - Impr.: MAC 4 Eingang abgewandelt, um generische Liste von MAC Adressen verarbeiten zu können
+- v1.04
 - v1.03
   - Impr.: Debug ausgaben & Stabilität durch try-catch bei regelmäßiger Statusabfrage
 - v1.02
