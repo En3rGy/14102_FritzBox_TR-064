@@ -79,6 +79,9 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein �
 
 ### Change Log
 
+- v1.07
+  - Fix [#4](https://github.com/En3rGy/14102_FritzBox_TR-064/issues/4)
+  - Impr.: Wenn eine MAC von Eingang MAC 4 nicht geprüft werden kann, wird dennoch ein (leeres) Datenfeld ausgegeben. So bleibt die x-te MAC-Adresse dem x-ten Feld am Ausgang zugeordnet. 
 - v1.06
   - Impr.: Ausgänge als SBC
   - Impr.: Try/catch für MAC-Abfrage 

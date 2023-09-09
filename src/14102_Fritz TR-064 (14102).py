@@ -8,6 +8,7 @@ import struct
 import hashlib
 import threading
 import json
+import time
 
 ##!!!!##################################################################################################
 #### Own written code can be placed above this commentblock . Do not change or delete commentblock! ####
@@ -17,7 +18,7 @@ import json
 class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
     def __init__(self, homeserver_context):
-        hsl20_4.BaseModule.__init__(self, homeserver_context, "hsl20_3_FritzBox")
+        hsl20_4.BaseModule.__init__(self, homeserver_context, "FritzBox")
         self.FRAMEWORK = self._get_framework()
         self.LOGGER = self._get_logger(hsl20_4.LOGGING_NONE,())
         self.PIN_I_SUID=1
@@ -58,8 +59,8 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 #### Own written code can be placed after this commentblock . Do not change or delete commentblock! ####
 ###################################################################################################!!!##
 
-
-    sbc_data_lock = threading.Lock()
+        self.sbc_data_lock = threading.Lock()
+        self.g_out_sbc = []
 
     def set_output_value_sbc(self, pin, val):
         # type:  (int, any) -> None
@@ -118,6 +119,10 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 yield sockaddr[0]
 
     def discover_fb(self):
+        """
+        :return:
+        :rtype: urlparse.ParseResult
+        """
         fb_ip = self._get_input_value(self.PIN_I_SFBIP)
         if fb_ip:
             url_unparsed = "http://" + str(fb_ip) + ":49000/tr64desc.xml"
@@ -154,27 +159,36 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
         try:
             sock.sendto(MCAST_MSG, (MCAST_GRP, MCAST_PORT))
         except socket.error as e:
-            self.log_data("Error", "discover: " + str(e))
+            self.add_exception("In discover_fb, {} ".format(e))
             sock.close()
+            return
 
         while True:
             try:
                 data = sock.recv(1024)
 
-                url_unparsed = self.do_regex('LOCATION: (.*)(?:\\n\\r|\\r\\n)SERVER:.*FRITZ!Box', data)
+                # url_unparsed = self.do_regex('LOCATION: (.*)(?:\\n\\r|\\r\\n)SERVER:.*FRITZ!Box', data)
+                url_unparsed = self.do_regex('(?i)LOCATION: (.*)(?:\\n\\r|\\r\\n)SERVER:.*FRITZ!Box', data)
                 url_parsed = urlparse.urlparse(url_unparsed)
 
                 # (scheme='http', netloc='192.168.178.1:49000', path='/tr64desc.xml', params='', query='', fragment='')
                 if url_parsed.netloc:
+                    print("Found FritzBox at {}".format(url_parsed.netloc))
                     sock.close()
                     return url_parsed
 
             except socket.timeout:
+                self.DEBUG.add_exception("Socket timed out while discovering FritzBox. Functionality of module not available!")
                 break
 
         sock.close()
 
     def get_security_port(self, p_url_parsed):
+        """
+        :param p_url_parsed:
+        :type p_url_parsed:
+        :return:
+        """
 
         url = p_url_parsed.geturl() + "/upnp/control/deviceinfo"
         url_parsed = urlparse.urlparse(url)
