@@ -49,6 +49,11 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein �
 | 15  | Reboot             | 0              | Löst bei eingehender 1 einen Reboot der Fritz!Box aus.                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 16  | Gen. SOAP Aktion   |                | Über diesen Eingang können beliebige SOAP Aktionen an die Fritz!Box übermittelt werden.<br>Der Aktionsaufruf muss dabei wie folgt gebildet werden: <code>{"serviceType":"urn:dslforum-org:service:WLANConfiguration:1", "action_name":"SetEnable","argumentList":{"NewEnable":"1"}}</code><br>Da über den HS keine " eingegeben werden können, müssen diese html encodiert werden. Hierbei muss wie folgt ersetzt werden: " &ensp; = &ensp; <i>&#38;quot;</i>. |
 
+### SOAP Aktion für Box-Status
+Abfrage gem. [WANDSLInterfaceConfig Service](https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/wandslifconfigSCPD.pdf):
+- `{"serviceType":"urn:dslforum-org:service:WANDSLInterfaceConfig:1", "action_name":"GetInfo","argumentList":{}}`<br>HTML-encodiert für E16:<br>
+`{&quot;serviceType&quot;:&quot;urn:dslforum-org:service:WANDSLInterfaceConfig:1&quot;, &quot;action_name&quot;:&quot;GetInfo&quot;,&quot;argumentList&quot;:{}}`
+- Ausgabe als JSON-String dann über A15 und mit z.B. Baustein [11087](https://github.com/En3rGy/11087_JSON-Parser) auswerten.
 
 ## Ausgänge
 
@@ -79,6 +84,8 @@ in der Fritz!Box-Oberfläche konfiguriert ist und der Nummer, die dem Baustein �
 
 ### Change Log
 
+- v1.07
+  - impr.: Doku
 - v1.07
   - Fix [#4](https://github.com/En3rGy/14102_FritzBox_TR-064/issues/4)
   - Impr.: Wenn eine MAC von Eingang MAC 4 nicht geprüft werden kann, wird dennoch ein (leeres) Datenfeld ausgegeben. So bleibt die x-te MAC-Adresse dem x-ten Feld am Ausgang zugeordnet. 
