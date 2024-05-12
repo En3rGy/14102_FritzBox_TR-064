@@ -84,49 +84,7 @@ Abfrage gem. [WANDSLInterfaceConfig Service](https://avm.de/fileadmin/user_uploa
 
 ### Change Log
 
-- v1.07
-  - impr.: Doku
-- v1.07
-  - Fix [#4](https://github.com/En3rGy/14102_FritzBox_TR-064/issues/4)
-  - Impr.: Wenn eine MAC von Eingang MAC 4 nicht geprüft werden kann, wird dennoch ein (leeres) Datenfeld ausgegeben. So bleibt die x-te MAC-Adresse dem x-ten Feld am Ausgang zugeordnet. 
-- v1.06
-  - Impr.: Ausgänge als SBC
-  - Impr.: Try/catch für MAC-Abfrage 
-- v1.05
-  - Impr.: MAC 4 Eingang abgewandelt, um generische Liste von MAC Adressen verarbeiten zu können
-- v1.04
-- v1.03
-  - Impr.: Debug ausgaben & Stabilität durch try-catch bei regelmäßiger Statusabfrage
-- v1.02
-  - Fix: JSON Ausgabe der SOPA-Antwort mit <code>"</code> statt <code>'</code>
-- v1.01
-  - tbd
-- v1.00
-  - Impr.: Neuer Ausgang: Gerät im Gast-WLAN angemeldet
-  - Impr.: Debug-Ausgaben plotten jew. IP mit
-- v0.8
-  - Impr.: WLAN Status nutzt nur noch "NewStatus" und nicht mehr "NewEnable" UND "NewStatus"
-- v0.7
-  - Impr.: Optionale Eingabe der FritzBox IP
-- v0.6
-  - Impr.: Ein-/Ausgang zum AB
-  - Impr.: Eingang zum Reboot der Fritz!Box
-  - Fix: Baustein bleibt bei fehlender Verbindung zur FritzBox hängen; Timeout nach 3s für Kommunikation eingefügt
-- v0.5
-  - Impr.: Baustein erkennt HS-IP selbständig
-- v0.4
-  - Timer zur Intervall-Abfrage des Status
-  - Ein-/Ausgänge für generische SOAP Requests
-  - Fix: Bei unter 4 WLAN Signalen wird der Status des Gast-WLAN nicht auf dem Ausgang Gast-WLAN ausgegeben, sondern nur auf dem höchsten Index, z.B. WLAN 3
-- v0.3
-  - Fix: RM WLAN 2 wird auf WLAN 3 ausgegeben
-  - Fix: Gast-WLAN E/A setzt WLAN 1
-- v0.2
-  - Anwesenheitserkennung
-  - Wählhilfe
-  - Automatische Erkennung Gast-WLAN
-- v0.1
-  - Initiales Release
+Check [release notes}(https://github.com/En3rGy/14102_FritzBox_TR-064/releases) on GitHub.
 
 ### Open Issues / Know Bugs
 

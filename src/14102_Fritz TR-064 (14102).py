@@ -174,7 +174,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                         continue
 
                     service_name = "urn:dslforum-org:service:Hosts:1"
-                    action = "GetInfo"
+                    action = "GetSpecificHostEntry"
                     attr_list = {"NewMACAddress": value}
                     data = fritz_box.set_soap_action(service_name, action, attr_list)
 
@@ -189,7 +189,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                     elif i == self.PIN_I_SMAC3:
                         self.set_output_value_sbc(self.PIN_O_BMAC3AVAIL, ret)
                 except Exception as e:
-                    self.log_msg("In update_status (MAC attendance), " + str(e))
+                    self.log_msg("In update_status (MAC attendance) | " + str(e))
 
             # generic mac address list
             mac_list = str(self._get_input_value(self.PIN_I_SMAC_CSV)).split(",")
@@ -379,7 +379,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 fritz_box.set_soap_action(service_name, action, attr_list)
             else:
                 action = "X_AVM-DE_DialNumber"
-                attr_list = {"NewX_AVM-DE_PhoneNumber": value}
+                attr_list = {"NewX_AVM-DE_PhoneNumber": "{}".format(self._get_input_value(self.PIN_I_STELNO))}
                 fritz_box.set_soap_action(service_name, action, attr_list)
         # end dial / call
 
