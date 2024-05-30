@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <modules>
-        <module category="Datenaustausch" context="FritzBox" id="14102" name="Fritz TR-064 (14102)" version="2.0">
+        <module category="Datenaustausch" context="FritzBox" id="14102" name="Fritz TR-064 (14102)" version="2.1">
             <inputs>
 				<input type="string" const_name="sUId" init_value="">1: Benutzer</input>
                 <input type="string" const_name="sPW" init_value="">1: Passwort</input>	

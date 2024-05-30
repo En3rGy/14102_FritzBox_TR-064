@@ -37,11 +37,30 @@ class TestSequenceFunctions(unittest.TestCase):
     def test_init(self):
         print("### Entering test_init")
         self.test.debug_input_value[self.test.PIN_I_NUPDATERATE] = 0
+        self.assertNotEqual(self.test.debug_output_value[self.test.PIN_O_SWIFI1SSID], "")
+
+    def test_cyclic_update(self):
+        print("### Entering test_cyclic_update")
+        self.assertNotEqual(self.test.debug_output_value[self.test.PIN_O_SWIFI1SSID], "")
+        self.test.debug_output_value[self.test.PIN_O_SWIFI1SSID] = ""
+        self.test.g_out_sbc[self.test.PIN_O_SWIFI1SSID] = ""
+        self.assertEqual(self.test.debug_output_value[self.test.PIN_O_SWIFI1SSID], "")
+
+        time.sleep(6)
+        self.assertNotEqual(self.test.debug_output_value[self.test.PIN_O_SWIFI1SSID], "")
+        self.test.debug_output_value[self.test.PIN_O_SWIFI1SSID] = ""
+        self.test.g_out_sbc[self.test.PIN_O_SWIFI1SSID] = ""
+        self.assertEqual(self.test.debug_output_value[self.test.PIN_O_SWIFI1SSID], "")
+
+        time.sleep(6)
+        self.assertNotEqual(self.test.debug_output_value[self.test.PIN_O_SWIFI1SSID], "")
+        self.test.debug_input_value[self.test.PIN_I_NUPDATERATE] = 0
 
     def test_guest_wifi_idx(self):
         print("### Entering test_init")
         self.test.get_guest_wifi_idx()
         self.test.debug_input_value[self.test.PIN_I_NUPDATERATE] = 0
+        self.assertNotEqual(self.test.debug_output_value[self.test.PIN_O_SWIFIGUESTSSID], "")
 
     def test_no_route(self):
         print("Entering test_no_route")

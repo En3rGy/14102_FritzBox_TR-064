@@ -136,6 +136,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
 
             # work with wifi
             try:
+                self.get_guest_wifi_idx()
                 for nWifiIdx in range(1, (self.guest_wifi_idx + 1)):
                     service_name = "urn:dslforum-org:service:WLANConfiguration:" + str(nWifiIdx)
                     action = "GetInfo"
@@ -162,6 +163,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                         self.set_output_value_sbc(self.PIN_O_BRMWLANGUESTONOFF, on)
                         self.set_output_value_sbc(self.PIN_O_SWIFIGUESTSSID, data["NewSSID"])
             except Exception:
+                print("ERROR - 14102...py | update_status | Unknown Error in wifi part of update_status")
                 self.log_msg("Unknown Error in wifi part of update_status")
             # End Wi-Fi
 
