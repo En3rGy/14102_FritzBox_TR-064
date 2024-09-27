@@ -74,6 +74,10 @@ Abfrage gem. [WANDSLInterfaceConfig Service](https://avm.de/fileadmin/user_uploa
 | 13  | (Beliebiger) Gast angem. | 0              | 1 = Gast angemeldet,</br> 0 = Kein Gast angemeldet                                                                                                              |
 | 14  | AB E/A                   | 0              | Ein/aus-Status Anrufbeantworter 1                                                                                                                               |
 | 15  | Gen. Soap Antw.          |                | Antwort auf die generische Anfrage                                                                                                                              |
+| 16  | Upstream MBit/s          |                | Upstream in MBit/s                                                                                                                                              |
+| 17  | Downstream MBit/s        |                | Downstream in MBit/s                                                                                                                                            |
+| 18  | Online                   |                | Online Status; 1 = Online                                                                                                                                       |
+| 19  | Heartbeat                |                | Bei jeder erfolgreichen Abfrage der FritzBox wird eine 1 gesendet                                                                                               |
 
 ## Sonstiges
 

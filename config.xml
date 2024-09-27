@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <modules>
-        <module category="Datenaustausch" context="FritzBox" id="14102" name="Fritz TR-064 (14102)" version="2.1">
+        <module category="Datenaustausch" context="FritzBox" id="14102" name="Fritz TR-064 (14102)" version="2.2">
             <inputs>
 				<input type="string" const_name="sUId" init_value="">1: Benutzer</input>
                 <input type="string" const_name="sPW" init_value="">1: Passwort</input>	
@@ -19,7 +19,7 @@
 				<input type="number" const_name="bAbEA" init_value="0">4: AB1 E/A</input>
 				<input type="number" const_name="bReboot" init_value="0">5: Reboot</input>
 				<input type="string" const_name="nSoapJson" init_value="">6: Gen. SOAP Aktion</input>
-				<input type="number" const_name="nUpdateRate" init_value="0">7: Update-Rate (s)</input>				
+				<input type="number" const_name="nUpdateRate" init_value="0">7: Update-Rate (s)</input>
             </inputs>
             <outputs>
 				<output type="string" const_name="sWifi1SSID" init_value="">2: SSID WLAN 1</output>			
@@ -37,7 +37,11 @@
 				<output type="number" const_name="bGuestAvail" init_value="0">3: Gast angem.</output>				
 				<output type="number" const_name="bAbEA" init_value="0">4: AB1 E/A</output>				
 				<output type="string" const_name="sSoapRply" init_value="0">5: Gen. Soap Antw.</output>
-				<output type="number" const_name="instance_id" init_value="0">6: Instance Id</output>				
+				<output type="number" const_name="instance_id" init_value="0">6: Instance Id</output>
+				<output type="number" const_name="upstream_mbit" init_value="0">7: Upstream MBit/s</output>
+				<output type="number" const_name="downstream_mbit" init_value="0">7: Downstream MBit/s</output>
+				<output type="number" const_name="online" init_value="0">7: Online</output>
+				<output type="number" const_name="heartbeat" init_value="0">9: Heartbeat</output>
             </outputs>
 			<remanent_variables>
             </remanent_variables>

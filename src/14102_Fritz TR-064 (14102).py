@@ -55,6 +55,10 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
         self.PIN_O_BABEA=14
         self.PIN_O_SSOAPRPLY=15
         self.PIN_O_INSTANCE_ID=16
+        self.PIN_O_UPSTREAM_MBIT=17
+        self.PIN_O_DOWNSTREAM_MBIT=18
+        self.PIN_O_ONLINE=19
+        self.PIN_O_HEARTBEAT=20
 
 ########################################################################################################
 #### Own written code can be placed after this commentblock . Do not change or delete commentblock! ####
@@ -131,6 +135,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
     def update_status(self):
         interval = self._get_input_value(self.PIN_I_NUPDATERATE)
         if interval > 0:
+            success = True
             self.ensure_fritz_box_init()
             global fritz_box
 
@@ -165,6 +170,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
             except Exception:
                 print("ERROR - 14102...py | update_status | Unknown Error in wifi part of update_status")
                 self.log_msg("Unknown Error in wifi part of update_status")
+                success = False
             # End Wi-Fi
 
             # MAC attendance
@@ -192,6 +198,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                         self.set_output_value_sbc(self.PIN_O_BMAC3AVAIL, ret)
                 except Exception as e:
                     self.log_msg("In update_status (MAC attendance) | " + str(e))
+                    success = False
 
             # generic mac address list
             mac_list = str(self._get_input_value(self.PIN_I_SMAC_CSV)).split(",")
@@ -214,6 +221,7 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                         result = result + str(ret) + ","
                 except Exception as e:
                     self.log_msg("In update_status (Generic MAC address list), " + str(e))
+                    success = False
 
             result = result[:-1]
             if result != str():
@@ -248,7 +256,25 @@ class FritzTR_064_14102_14102(hsl20_4.BaseModule):
                 pass
             # end AB
 
-            t = threading.Timer(interval, self.update_status).start()
+            # ...
+            service_name = "urn:dslforum-org:service:WANCommonInterfaceConfig:1"
+            action = "GetCommonLinkProperties"
+            attr_list = {}
+            try:
+                data = fritz_box.set_soap_action(service_name, action, attr_list)
+                if data:
+                    upstream_mbit_s = int(data["NewLayer1UpstreamMaxBitRate"]) / 1000.0
+                    downstream_mbit_s = int(data["NewLayer1DownstreamMaxBitRate"]) / 1000.0
+                    status = int(data["NewPhysicalLinkStatus"] == "Up")
+                    self.set_output_value_sbc(self.PIN_O_UPSTREAM_MBIT, upstream_mbit_s)
+                    self.set_output_value_sbc(self.PIN_O_DOWNSTREAM_MBIT, downstream_mbit_s)
+                    self.set_output_value_sbc(self.PIN_O_ONLINE, status)
+            except Exception as e:
+                print("update_status | {} | {}".format(service_name, e))
+                success = False
+
+            self.set_output_value_sbc(self.PIN_O_HEARTBEAT, success)
+            threading.Timer(interval, self.update_status).start()
         else:
             print("Interval = 0 in update_status. Did nothing.")
 
